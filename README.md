@@ -4,7 +4,7 @@
 
 A comprehensive, hands-on workshop repository for learning Google Maps JavaScript API fundamentals through progressive demonstrations. This repository serves as both a live tutorial during workshop presentations and a reference implementation for attendees.
 
-## 🎯 Workshop Topics
+## Workshop Topics
 
 - **Maps JavaScript API Basics** - Map initialization and configuration
 - **Marker Clustering** - Efficient visualization of large marker datasets
@@ -12,7 +12,7 @@ A comprehensive, hands-on workshop repository for learning Google Maps JavaScrip
 - **Places API** - Location search with autocomplete functionality
 - **GeoJSON Overlay** - External data integration and styling
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 maps-workshop/
@@ -27,12 +27,11 @@ maps-workshop/
 │   └── data/           # Data files
 │       └── sample-data.geojson
 ├── tests/              # Test files and demos
-├── docs/               # Documentation and summaries
 ├── index.html          # Main HTML file
 └── README.md           # This file
 ```
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have:
 
@@ -50,7 +49,7 @@ You need to enable the following APIs in your Google Cloud Console:
 - **Places API** - Location search and autocomplete
 - **Visualization API** - Heatmap layer support
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Step 1: Obtain a Google Maps API Key
 
@@ -104,7 +103,7 @@ python -m http.server 8000
 # Then open http://localhost:8000 in your browser
 ```
 
-## 🗺️ Features & Usage
+## Features & Usage
 
 ### Basic Map
 
@@ -237,7 +236,7 @@ geoJsonModule.setStyle({
 });
 ```
 
-## 🎮 Console Commands
+## Console Commands
 
 All features can be controlled from the browser console for live demonstrations:
 
@@ -276,7 +275,7 @@ getState()           // View application state
 help()               // Show all available commands
 ```
 
-## 📊 Data Customization
+## Data Customization
 
 ### Sample Data Structure
 
@@ -355,7 +354,7 @@ The `src/data/sample-data.geojson` file contains example GeoJSON features for Ka
 - MultiLineString
 - MultiPolygon
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### API Key Errors
 
@@ -421,7 +420,7 @@ stageManager.enableModule('clustering')  // Will show detailed error if any
 3. Ensure map is zoomed to the correct region
 4. Try centering map on your data: `map.setCenter({lat: yourLat, lng: yourLng})`
 
-## 🎓 Workshop Presentation Tips
+## Workshop Presentation Tips
 
 ### Live Demonstration Flow
 
@@ -476,7 +475,7 @@ A: Yes! The modules are framework-agnostic. You can integrate them into any fram
 **Q: How do I add more data points?**
 A: Edit `data.js` and add more objects to the `samplePoints` array.
 
-## 📚 Additional Resources
+## Additional Resources
 
 ### Official Documentation
 
@@ -486,7 +485,7 @@ A: Edit `data.js` and add more objects to the `samplePoints` array.
 - [Places API](https://developers.google.com/maps/documentation/javascript/places)
 - [Data Layer (GeoJSON)](https://developers.google.com/maps/documentation/javascript/datalayer)
 
-### Google Codelabs (Recommended!)
+### Google Codelabs (Recommended)
 
 These step-by-step tutorials are perfect for learning and reference:
 
@@ -506,7 +505,7 @@ These step-by-step tutorials are perfect for learning and reference:
 - [GeoJSON Specification](https://geojson.org/)
 - [GeoJSON.io](https://geojson.io/) - Create and visualize GeoJSON
 
-## 🤝 Workshop Context
+## Workshop Context
 
 This repository is part of the **AirQo x GDG Makerere University Workshop** on "Visualizing Pollution Across Kampala". 
 
@@ -546,11 +545,11 @@ heatmapModule.enable();
 
 **Note:** This repository provides the Google Maps visualization foundation. The AirQo team will provide their API endpoint and data structure during the workshop.
 
-## 📝 License
+## License
 
 This project is open source and available for educational purposes.
 
-## 🙋 Support
+## Support
 
 If you encounter issues during the workshop:
 1. Check the Troubleshooting section above
@@ -560,4 +559,4 @@ If you encounter issues during the workshop:
 
 ---
 
-**Happy Mapping! 🗺️**
+**Happy Mapping!**
