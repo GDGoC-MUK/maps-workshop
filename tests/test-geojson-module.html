@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoJSON Module Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #1967D2;
+        }
+
+        .info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f0fe;
+            border-left: 4px solid #4285F4;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>GeoJSON Module Test</h1>
+
+    <div id="map"></div>
+
+    <div class="controls">
+        <h3>Controls</h3>
+        <button onclick="enableGeoJSON()">Enable GeoJSON</button>
+        <button onclick="disableGeoJSON()">Disable GeoJSON</button>
+        <button onclick="toggleGeoJSON()">Toggle GeoJSON</button>
+        <button onclick="checkStatus()">Check Status</button>
+        <button onclick="changeStyle()">Change Style (Red)</button>
+        <button onclick="clearAllFeatures()">Clear Features</button>
+
+        <div class="info">
+            <strong>Instructions:</strong>
+            <ul>
+                <li>Click "Enable GeoJSON" to load and display GeoJSON data from sample-data.geojson</li>
+                <li>Click on any feature (polygon, line, or point) to see its properties</li>
+                <li>Use "Change Style" to apply custom styling</li>
+                <li>Use "Disable GeoJSON" to remove all features</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Load Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+
+    <!-- Load application code -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        let map;
+        let geoJsonModule;
+
+        function initMap() {
+            // Create map centered on Kampala, Uganda
+            const kampalaCenter = { lat: 0.3476, lng: 32.5825 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: kampalaCenter,
+                zoom: 12,
+                mapTypeId: 'roadmap'
+            });
+
+            // Create GeoJSON module instance
+            geoJsonModule = new GeoJSONModule(map, 'sample-data.geojson');
+
+            console.log('Map initialized successfully');
+            console.log('GeoJSON module ready');
+            console.log('\nAvailable functions:');
+            console.log('- enableGeoJSON()');
+            console.log('- disableGeoJSON()');
+            console.log('- toggleGeoJSON()');
+            console.log('- checkStatus()');
+            console.log('- changeStyle()');
+            console.log('- clearAllFeatures()');
+        }
+
+        async function enableGeoJSON() {
+            try {
+                await geoJsonModule.enable();
+                console.log('GeoJSON enabled successfully');
+                alert('GeoJSON overlay enabled! Click on features to see their properties.');
+            } catch (error) {
+                console.error('Failed to enable GeoJSON:', error);
+            }
+        }
+
+        function disableGeoJSON() {
+            geoJsonModule.disable();
+            console.log('GeoJSON disabled');
+            alert('GeoJSON overlay disabled');
+        }
+
+        async function toggleGeoJSON() {
+            if (geoJsonModule.isActive()) {
+                disableGeoJSON();
+            } else {
+                await enableGeoJSON();
+            }
+        }
+
+        function checkStatus() {
+            const status = geoJsonModule.isActive() ? 'Active' : 'Inactive';
+            console.log('GeoJSON module status:', status);
+            alert(`GeoJSON module is ${status}`);
+        }
+
+        function changeStyle() {
+            geoJsonModule.setStyle({
+                fillColor: '#FF0000',
+                strokeColor: '#8B0000',
+                strokeWeight: 3,
+                fillOpacity: 0.5
+            });
+            console.log('Style changed to red');
+            alert('GeoJSON style changed to red');
+        }
+
+        function clearAllFeatures() {
+            geoJsonModule.clearFeatures();
+            console.log('All features cleared');
+            alert('All GeoJSON features cleared');
+        }
+
+        // Make functions available globally
+        window.initMap = initMap;
+        window.enableGeoJSON = enableGeoJSON;
+        window.disableGeoJSON = disableGeoJSON;
+        window.toggleGeoJSON = toggleGeoJSON;
+        window.checkStatus = checkStatus;
+        window.changeStyle = changeStyle;
+        window.clearAllFeatures = clearAllFeatures;
+    </script>
+</body>
+
+</html>

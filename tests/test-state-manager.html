@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StateManager Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>StateManager Unit Tests</h1>
+    <div id="test-results"></div>
+    <div id="summary" class="summary"></div>
+
+    <script>
+        // Simple test framework
+        class TestRunner {
+            constructor() {
+                this.results = [];
+                this.currentSuite = '';
+            }
+
+            describe(suiteName, tests) {
+                this.currentSuite = suiteName;
+                tests();
+            }
+
+            test(testName, testFn) {
+                try {
+                    testFn();
+                    this.results.push({
+                        suite: this.currentSuite,
+                        name: testName,
+                        passed: true
+                    });
+                } catch (error) {
+                    this.results.push({
+                        suite: this.currentSuite,
+                        name: testName,
+                        passed: false,
+                        error: error.message
+                    });
+                }
+            }
+
+            expect(actual) {
+                return {
+                    toBe: (expected) => {
+                        if (actual !== expected) {
+                            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}`);
+                        }
+                    },
+                    toEqual: (expected) => {
+                        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}`);
+                        }
+                    },
+                    toBeNull: () => {
+                        if (actual !== null) {
+                            throw new Error(`Expected null but got ${JSON.stringify(actual)}`);
+                        }
+                    },
+                    toContain: (item) => {
+                        if (!actual.includes(item)) {
+                            throw new Error(`Expected array to contain ${JSON.stringify(item)}`);
+                        }
+                    },
+                    toThrow: () => {
+                        let threw = false;
+                        try {
+                            actual();
+                        } catch (e) {
+                            threw = true;
+                        }
+                        if (!threw) {
+                            throw new Error('Expected function to throw an error');
+                        }
+                    }
+                };
+            }
+
+            render() {
+                const resultsDiv = document.getElementById('test-results');
+                const summaryDiv = document.getElementById('summary');
+
+                let currentSuite = '';
+                this.results.forEach(result => {
+                    if (result.suite !== currentSuite) {
+                        currentSuite = result.suite;
+                        const suiteHeader = document.createElement('h2');
+                        suiteHeader.textContent = currentSuite;
+                        resultsDiv.appendChild(suiteHeader);
+                    }
+
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+                    resultDiv.textContent = `${result.passed ? '✓' : '✗'} ${result.name}`;
+                    if (!result.passed) {
+                        resultDiv.textContent += ` - ${result.error}`;
+                    }
+                    resultsDiv.appendChild(resultDiv);
+                });
+
+                const passed = this.results.filter(r => r.passed).length;
+                const failed = this.results.filter(r => !r.passed).length;
+                const total = this.results.length;
+
+                summaryDiv.innerHTML = `
+                    <strong>Test Summary:</strong><br>
+                    Total: ${total} | Passed: ${passed} | Failed: ${failed}
+                `;
+            }
+        }
+
+        // StateManager class (copied from app.js for testing)
+        class StateManager {
+            constructor() {
+                this.state = {
+                    mapInitialized: false,
+                    apiKeyValid: false,
+                    activeModules: [],
+                    mapCenter: null,
+                    mapZoom: null,
+                    moduleStates: {}
+                };
+            }
+
+            getState() {
+                return { ...this.state };
+            }
+
+            setState(key, value) {
+                this.state[key] = value;
+            }
+
+            clearState() {
+                this.state = {
+                    mapInitialized: false,
+                    apiKeyValid: false,
+                    activeModules: [],
+                    mapCenter: null,
+                    mapZoom: null,
+                    moduleStates: {}
+                };
+            }
+
+            exportState() {
+                return JSON.stringify(this.state, null, 2);
+            }
+
+            importState(stateJson) {
+                try {
+                    const importedState = JSON.parse(stateJson);
+                    this.state = {
+                        mapInitialized: importedState.mapInitialized || false,
+                        apiKeyValid: importedState.apiKeyValid || false,
+                        activeModules: importedState.activeModules || [],
+                        mapCenter: importedState.mapCenter || null,
+                        mapZoom: importedState.mapZoom || null,
+                        moduleStates: importedState.moduleStates || {}
+                    };
+                } catch (error) {
+                    throw new Error(`Failed to import state: ${error.message}`);
+                }
+            }
+        }
+
+        // Run tests
+        const runner = new TestRunner();
+
+        runner.describe('StateManager - Initialization', () => {
+            runner.test('should initialize with default state', () => {
+                const stateManager = new StateManager();
+                const state = stateManager.getState();
+
+                runner.expect(state.mapInitialized).toBe(false);
+                runner.expect(state.apiKeyValid).toBe(false);
+                runner.expect(state.activeModules).toEqual([]);
+                runner.expect(state.mapCenter).toBeNull();
+                runner.expect(state.mapZoom).toBeNull();
+                runner.expect(state.moduleStates).toEqual({});
+            });
+        });
+
+        runner.describe('StateManager - getState()', () => {
+            runner.test('should return current state object', () => {
+                const stateManager = new StateManager();
+                const state = stateManager.getState();
+
+                runner.expect(typeof state).toBe('object');
+                runner.expect(state.hasOwnProperty('mapInitialized')).toBe(true);
+                runner.expect(state.hasOwnProperty('apiKeyValid')).toBe(true);
+                runner.expect(state.hasOwnProperty('activeModules')).toBe(true);
+                runner.expect(state.hasOwnProperty('mapCenter')).toBe(true);
+                runner.expect(state.hasOwnProperty('mapZoom')).toBe(true);
+                runner.expect(state.hasOwnProperty('moduleStates')).toBe(true);
+            });
+
+            runner.test('should return a copy of state (not reference)', () => {
+                const stateManager = new StateManager();
+                const state1 = stateManager.getState();
+                state1.mapInitialized = true;
+
+                const state2 = stateManager.getState();
+                runner.expect(state2.mapInitialized).toBe(false);
+            });
+        });
+
+        runner.describe('StateManager - setState()', () => {
+            runner.test('should update mapInitialized', () => {
+                const stateManager = new StateManager();
+                stateManager.setState('mapInitialized', true);
+
+                const state = stateManager.getState();
+                runner.expect(state.mapInitialized).toBe(true);
+            });
+
+            runner.test('should update apiKeyValid', () => {
+                const stateManager = new StateManager();
+                stateManager.setState('apiKeyValid', true);
+
+                const state = stateManager.getState();
+                runner.expect(state.apiKeyValid).toBe(true);
+            });
+
+            runner.test('should update activeModules', () => {
+                const stateManager = new StateManager();
+                stateManager.setState('activeModules', ['clustering', 'heatmap']);
+
+                const state = stateManager.getState();
+                runner.expect(state.activeModules).toEqual(['clustering', 'heatmap']);
+            });
+
+            runner.test('should update mapCenter', () => {
+                const stateManager = new StateManager();
+                const center = { lat: 0.3476, lng: 32.5825 };
+                stateManager.setState('mapCenter', center);
+
+                const state = stateManager.getState();
+                runner.expect(state.mapCenter).toEqual(center);
+            });
+
+            runner.test('should update mapZoom', () => {
+                const stateManager = new StateManager();
+                stateManager.setState('mapZoom', 12);
+
+                const state = stateManager.getState();
+                runner.expect(state.mapZoom).toBe(12);
+            });
+
+            runner.test('should update moduleStates', () => {
+                const stateManager = new StateManager();
+                const moduleStates = {
+                    clustering: { active: true, lastToggled: new Date() }
+                };
+                stateManager.setState('moduleStates', moduleStates);
+
+                const state = stateManager.getState();
+                runner.expect(state.moduleStates).toEqual(moduleStates);
+            });
+        });
+
+        runner.describe('StateManager - clearState()', () => {
+            runner.test('should reset all state properties to defaults', () => {
+                const stateManager = new StateManager();
+
+                // Set some values
+                stateManager.setState('mapInitialized', true);
+                stateManager.setState('apiKeyValid', true);
+                stateManager.setState('activeModules', ['clustering']);
+                stateManager.setState('mapCenter', { lat: 0.3476, lng: 32.5825 });
+                stateManager.setState('mapZoom', 12);
+
+                // Clear state
+                stateManager.clearState();
+
+                const state = stateManager.getState();
+                runner.expect(state.mapInitialized).toBe(false);
+                runner.expect(state.apiKeyValid).toBe(false);
+                runner.expect(state.activeModules).toEqual([]);
+                runner.expect(state.mapCenter).toBeNull();
+                runner.expect(state.mapZoom).toBeNull();
+                runner.expect(state.moduleStates).toEqual({});
+            });
+        });
+
+        runner.describe('StateManager - exportState()', () => {
+            runner.test('should return JSON string of current state', () => {
+                const stateManager = new StateManager();
+                stateManager.setState('mapInitialized', true);
+                stateManager.setState('mapZoom', 12);
+
+                const exported = stateManager.exportState();
+
+                runner.expect(typeof exported).toBe('string');
+
+                // Verify it's valid JSON
+                const parsed = JSON.parse(exported);
+                runner.expect(parsed.mapInitialized).toBe(true);
+                runner.expect(parsed.mapZoom).toBe(12);
+            });
+
+            runner.test('should export complete state structure', () => {
+                const stateManager = new StateManager();
+                const exported = stateManager.exportState();
+                const parsed = JSON.parse(exported);
+
+                runner.expect(parsed.hasOwnProperty('mapInitialized')).toBe(true);
+                runner.expect(parsed.hasOwnProperty('apiKeyValid')).toBe(true);
+                runner.expect(parsed.hasOwnProperty('activeModules')).toBe(true);
+                runner.expect(parsed.hasOwnProperty('mapCenter')).toBe(true);
+                runner.expect(parsed.hasOwnProperty('mapZoom')).toBe(true);
+                runner.expect(parsed.hasOwnProperty('moduleStates')).toBe(true);
+            });
+        });
+
+        runner.describe('StateManager - importState()', () => {
+            runner.test('should import state from valid JSON string', () => {
+                const stateManager = new StateManager();
+                const stateJson = JSON.stringify({
+                    mapInitialized: true,
+                    apiKeyValid: true,
+                    activeModules: ['clustering', 'heatmap'],
+                    mapCenter: { lat: 0.3476, lng: 32.5825 },
+                    mapZoom: 12,
+                    moduleStates: { clustering: { active: true } }
+                });
+
+                stateManager.importState(stateJson);
+
+                const state = stateManager.getState();
+                runner.expect(state.mapInitialized).toBe(true);
+                runner.expect(state.apiKeyValid).toBe(true);
+                runner.expect(state.activeModules).toEqual(['clustering', 'heatmap']);
+                runner.expect(state.mapCenter).toEqual({ lat: 0.3476, lng: 32.5825 });
+                runner.expect(state.mapZoom).toBe(12);
+                runner.expect(state.moduleStates).toEqual({ clustering: { active: true } });
+            });
+
+            runner.test('should handle partial state import with defaults', () => {
+                const stateManager = new StateManager();
+                const stateJson = JSON.stringify({
+                    mapInitialized: true,
+                    mapZoom: 15
+                });
+
+                stateManager.importState(stateJson);
+
+                const state = stateManager.getState();
+                runner.expect(state.mapInitialized).toBe(true);
+                runner.expect(state.mapZoom).toBe(15);
+                runner.expect(state.apiKeyValid).toBe(false);
+                runner.expect(state.activeModules).toEqual([]);
+                runner.expect(state.mapCenter).toBeNull();
+            });
+
+            runner.test('should throw error for invalid JSON', () => {
+                const stateManager = new StateManager();
+
+                runner.expect(() => {
+                    stateManager.importState('invalid json');
+                }).toThrow();
+            });
+
+            runner.test('should throw error with descriptive message', () => {
+                const stateManager = new StateManager();
+
+                try {
+                    stateManager.importState('invalid json');
+                    throw new Error('Should have thrown');
+                } catch (error) {
+                    runner.expect(error.message.includes('Failed to import state')).toBe(true);
+                }
+            });
+        });
+
+        runner.describe('StateManager - Integration', () => {
+            runner.test('should support export and import round-trip', () => {
+                const stateManager1 = new StateManager();
+                stateManager1.setState('mapInitialized', true);
+                stateManager1.setState('apiKeyValid', true);
+                stateManager1.setState('activeModules', ['clustering']);
+                stateManager1.setState('mapCenter', { lat: 0.3476, lng: 32.5825 });
+                stateManager1.setState('mapZoom', 12);
+
+                const exported = stateManager1.exportState();
+
+                const stateManager2 = new StateManager();
+                stateManager2.importState(exported);
+
+                const state1 = stateManager1.getState();
+                const state2 = stateManager2.getState();
+
+                runner.expect(state2).toEqual(state1);
+            });
+        });
+
+        // Render results
+        runner.render();
+    </script>
+</body>
+
+</html>
