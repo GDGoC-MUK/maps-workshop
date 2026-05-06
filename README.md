@@ -53,6 +53,15 @@ You need to enable the following APIs in your Google Cloud Console:
 
 ### Step 1: Obtain a Google Maps API Key
 
+**For Workshop Participants (Quick Start):**
+
+You can use Google's demo API key to get started immediately:
+- **Demo Key:** `AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg`
+- **Note:** This key is for demonstration purposes only and has usage limits
+- **Learn more:** [Google Maps Demo Key Documentation](https://developers.google.com/maps/documentation/javascript/demo-key)
+
+**For Production Use (Create Your Own Key):**
+
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Navigate to **APIs & Services** > **Library**
@@ -73,14 +82,14 @@ You need to enable the following APIs in your Google Cloud Console:
 
 1. Open `index.html` in your text editor
 2. Find line 62 (the Google Maps API script tag)
-3. Replace `YOUR_API_KEY_HERE` with your actual API key:
+3. Replace `YOUR_API_KEY_HERE` with your API key:
 
 ```html
-<!-- BEFORE -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places,visualization&callback=initMap" async defer></script>
+<!-- Using Demo Key (for workshop) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places,visualization&callback=initMap" async defer></script>
 
-<!-- AFTER -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD...your-key-here...&libraries=places,visualization&callback=initMap" async defer></script>
+<!-- OR Using Your Own Key (for production) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY&libraries=places,visualization&callback=initMap" async defer></script>
 ```
 
 ### Step 3: Run the Application
