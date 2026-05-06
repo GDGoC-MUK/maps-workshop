@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeatmapModule Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #1557b0;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>HeatmapModule Test</h1>
+    <div id="map"></div>
+
+    <div class="controls">
+        <h2>Controls</h2>
+        <button onclick="testEnable()">Enable Heatmap</button>
+        <button onclick="testDisable()">Disable Heatmap</button>
+        <button onclick="testIsActive()">Check isActive()</button>
+        <button onclick="testUpdateData()">Update Data (Random)</button>
+        <button onclick="testSetGradient()">Set Custom Gradient</button>
+        <button onclick="testSetRadius()">Set Radius (50px)</button>
+        <button onclick="testSetOpacity()">Set Opacity (0.8)</button>
+        <button onclick="testGetHeatmap()">Get Heatmap Instance</button>
+    </div>
+
+    <div class="info">
+        <h3>Test Results</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Global callback function for API authentication failures
+        window.gm_authFailure = function () {
+            document.getElementById('map').innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #d32f2f;">
+                    <h2>API Key Error</h2>
+                    <p>Please add a valid Google Maps API key to this file.</p>
+                </div>
+            `;
+        };
+    </script>
+
+    <!-- Google Maps JavaScript API with visualization library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=visualization&callback=initMap"
+        async defer></script>
+
+    <!-- Sample data -->
+    <script src="data.js"></script>
+
+    <!-- Application code (contains HeatmapModule) -->
+    <script src="app.js"></script>
+
+    <script>
+        let map;
+        let heatmapModule;
+
+        function initMap() {
+            // Create map centered on Kampala
+            const kampalaCenter = { lat: 0.3476, lng: 32.5825 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: kampalaCenter,
+                zoom: 12,
+                mapTypeId: 'roadmap'
+            });
+
+            // Create HeatmapModule instance
+            heatmapModule = new HeatmapModule(map, samplePoints);
+
+            logResult('Map initialized successfully');
+            logResult(`HeatmapModule created with ${samplePoints.length} data points`);
+        }
+
+        function logResult(message) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `<p><strong>[${timestamp}]</strong> ${message}</p>`;
+            console.log(message);
+        }
+
+        function testEnable() {
+            try {
+                heatmapModule.enable();
+                logResult('✓ enable() called successfully');
+            } catch (error) {
+                logResult(`✗ enable() failed: ${error.message}`);
+            }
+        }
+
+        function testDisable() {
+            try {
+                heatmapModule.disable();
+                logResult('✓ disable() called successfully');
+            } catch (error) {
+                logResult(`✗ disable() failed: ${error.message}`);
+            }
+        }
+
+        function testIsActive() {
+            try {
+                const isActive = heatmapModule.isActive();
+                logResult(`✓ isActive() returned: ${isActive}`);
+            } catch (error) {
+                logResult(`✗ isActive() failed: ${error.message}`);
+            }
+        }
+
+        function testUpdateData() {
+            try {
+                // Create random subset of data
+                const randomData = samplePoints
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 20);
+
+                heatmapModule.updateData(randomData);
+                logResult(`✓ updateData() called with ${randomData.length} points`);
+            } catch (error) {
+                logResult(`✗ updateData() failed: ${error.message}`);
+            }
+        }
+
+        function testSetGradient() {
+            try {
+                // Custom gradient: green to yellow to red
+                const customGradient = [
+                    'rgba(0, 255, 0, 0)',
+                    'rgba(0, 255, 0, 1)',
+                    'rgba(255, 255, 0, 1)',
+                    'rgba(255, 0, 0, 1)'
+                ];
+
+                heatmapModule.setGradient(customGradient);
+                logResult('✓ setGradient() called with custom colors');
+            } catch (error) {
+                logResult(`✗ setGradient() failed: ${error.message}`);
+            }
+        }
+
+        function testSetRadius() {
+            try {
+                heatmapModule.setRadius(50);
+                logResult('✓ setRadius(50) called successfully');
+            } catch (error) {
+                logResult(`✗ setRadius() failed: ${error.message}`);
+            }
+        }
+
+        function testSetOpacity() {
+            try {
+                heatmapModule.setOpacity(0.8);
+                logResult('✓ setOpacity(0.8) called successfully');
+            } catch (error) {
+                logResult(`✗ setOpacity() failed: ${error.message}`);
+            }
+        }
+
+        function testGetHeatmap() {
+            try {
+                const heatmap = heatmapModule.getHeatmap();
+                if (heatmap) {
+                    logResult(`✓ getHeatmap() returned HeatmapLayer instance`);
+                } else {
+                    logResult('✓ getHeatmap() returned null (heatmap not active)');
+                }
+            } catch (error) {
+                logResult(`✗ getHeatmap() failed: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+
+</html>

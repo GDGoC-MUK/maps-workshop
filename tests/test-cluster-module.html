@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClusterModule Test - Google Maps Workshop</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .controls {
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .controls button:hover {
+            background: #1557b0;
+        }
+
+        .controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>ClusterModule Test</h1>
+            <p>Testing marker clustering functionality</p>
+        </header>
+
+        <div class="controls">
+            <button id="enableBtn" onclick="testEnable()">Enable Clustering</button>
+            <button id="disableBtn" onclick="testDisable()" disabled>Disable Clustering</button>
+            <button id="updateBtn" onclick="testUpdate()" disabled>Update Data (10 points)</button>
+            <button id="statusBtn" onclick="testStatus()">Check Status</button>
+            <div class="status" id="status">Status: Ready to test</div>
+        </div>
+
+        <div id="map" class="map-container"></div>
+    </div>
+
+    <script>
+        // Global callback function for API authentication failures
+        window.gm_authFailure = function () {
+            const mapContainer = document.getElementById('map');
+            mapContainer.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #d32f2f; background-color: #ffebee; border: 2px solid #d32f2f; border-radius: 4px;">
+                    <h2>⚠️ API Key Error</h2>
+                    <p>Your Google Maps API key is missing or invalid.</p>
+                    <p>Please update the API key in this test file.</p>
+                </div>
+            `;
+            console.error('Google Maps API authentication failed.');
+        };
+    </script>
+
+    <!-- Google Maps JavaScript API -->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places,visualization&callback=initTestMap"
+        async defer></script>
+
+    <!-- MarkerClusterer library from CDN -->
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+    <!-- Application data -->
+    <script src="data.js"></script>
+
+    <!-- Application code -->
+    <script src="app.js"></script>
+
+    <script>
+        let map;
+        let clusterModule;
+
+        function initTestMap() {
+            // Create map centered on Kampala, Uganda
+            const kampalaCenter = { lat: 0.3476, lng: 32.5825 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: kampalaCenter,
+                zoom: 12,
+                mapTypeId: 'roadmap'
+            });
+
+            // Initialize ClusterModule with sample data
+            clusterModule = new ClusterModule(map, samplePoints);
+
+            updateStatus('Map initialized. ClusterModule created with ' + samplePoints.length + ' data points.');
+            console.log('Test map initialized successfully');
+            console.log('ClusterModule instance created');
+        }
+
+        function testEnable() {
+            if (!clusterModule) {
+                updateStatus('ERROR: ClusterModule not initialized');
+                return;
+            }
+
+            try {
+                clusterModule.enable();
+                updateStatus('✓ Clustering enabled. Check the map for clustered markers.');
+                document.getElementById('enableBtn').disabled = true;
+                document.getElementById('disableBtn').disabled = false;
+                document.getElementById('updateBtn').disabled = false;
+            } catch (error) {
+                updateStatus('ERROR: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function testDisable() {
+            if (!clusterModule) {
+                updateStatus('ERROR: ClusterModule not initialized');
+                return;
+            }
+
+            try {
+                clusterModule.disable();
+                updateStatus('✓ Clustering disabled. Markers removed from map.');
+                document.getElementById('enableBtn').disabled = false;
+                document.getElementById('disableBtn').disabled = true;
+                document.getElementById('updateBtn').disabled = true;
+            } catch (error) {
+                updateStatus('ERROR: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function testUpdate() {
+            if (!clusterModule) {
+                updateStatus('ERROR: ClusterModule not initialized');
+                return;
+            }
+
+            try {
+                // Create a subset of data points for testing
+                const testData = samplePoints.slice(0, 10);
+                clusterModule.updateData(testData);
+                updateStatus('✓ Data updated with ' + testData.length + ' points. Clustering refreshed.');
+            } catch (error) {
+                updateStatus('ERROR: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function testStatus() {
+            if (!clusterModule) {
+                updateStatus('ERROR: ClusterModule not initialized');
+                return;
+            }
+
+            try {
+                const isActive = clusterModule.isActive();
+                const clusterer = clusterModule.getClusterer();
+                const markerCount = clusterer ? clusterer.markers.length : 0;
+
+                updateStatus(
+                    'Status: ' + (isActive ? 'ACTIVE' : 'INACTIVE') +
+                    ' | Markers: ' + markerCount +
+                    ' | Clusterer: ' + (clusterer ? 'Initialized' : 'null')
+                );
+            } catch (error) {
+                updateStatus('ERROR: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function updateStatus(message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            console.log('Status:', message);
+        }
+
+        // Make functions available globally
+        window.initTestMap = initTestMap;
+    </script>
+</body>
+
+</html>

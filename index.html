@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Workshop - AirQo GDG</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Google Maps JavaScript API Workshop</h1>
+            <p>Progressive demonstrations of Maps API features</p>
+        </header>
+
+        <div class="search-container">
+            <input id="search-input" type="text" placeholder="Search for a location..." class="search-input" />
+        </div>
+
+        <div id="map" class="map-container"></div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
+
+    <!-- 
+        IMPORTANT: Replace YOUR_API_KEY_HERE with your actual Google Maps API key
+        
+        To get an API key:
+        1. Go to https://console.cloud.google.com/
+        2. Create a new project or select an existing one
+        3. Enable the following APIs:
+           - Maps JavaScript API
+           - Places API
+           - Visualization API (for heatmaps)
+        4. Go to Credentials and create an API key
+        5. Replace YOUR_API_KEY_HERE below with your key
+    -->
+    <script>
+        // Global callback function for API authentication failures
+        window.gm_authFailure = function () {
+            const mapContainer = document.getElementById('map');
+            const errorMessage = document.getElementById('error-message');
+
+            mapContainer.style.display = 'none';
+            errorMessage.style.display = 'block';
+            errorMessage.innerHTML = `
+                <div class="error-content">
+                    <h2>⚠️ API Key Error</h2>
+                    <p><strong>Your Google Maps API key is missing or invalid.</strong></p>
+                    <p>Please follow these steps:</p>
+                    <ol>
+                        <li>Open <code>index.html</code> in a text editor</li>
+                        <li>Find the script tag with <code>YOUR_API_KEY_HERE</code></li>
+                        <li>Replace it with your actual Google Maps API key</li>
+                        <li>Make sure you've enabled Maps JavaScript API, Places API, and Visualization API</li>
+                    </ol>
+                    <p>For detailed instructions, see <strong>README.md</strong></p>
+                </div>
+            `;
+
+            console.error('Google Maps API authentication failed. Check your API key in index.html');
+        };
+    </script>
+
+    <!-- Google Maps JavaScript API with required libraries -->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places,visualization&callback=initMap"
+        async defer></script>
+
+    <!-- MarkerClusterer library from CDN -->
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+    <!-- Application data -->
+    <script src="src/js/data.js"></script>
+
+    <!-- Application code -->
+    <script src="src/js/app.js"></script>
+</body>
+
+</html>

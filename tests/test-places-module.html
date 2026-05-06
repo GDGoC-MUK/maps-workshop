@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlacesModule Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        #search-input {
+            width: 400px;
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .status {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .log {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>PlacesModule Test</h1>
+
+    <div class="search-container">
+        <input id="search-input" type="text" placeholder="Search for a location..." />
+    </div>
+
+    <div class="controls">
+        <button onclick="testEnable()">Enable Places</button>
+        <button onclick="testDisable()">Disable Places</button>
+        <button onclick="testIsActive()">Check isActive()</button>
+        <button onclick="testGetAutocomplete()">Get Autocomplete</button>
+        <button onclick="testClearMarker()">Clear Marker</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="status">
+        <strong>Status:</strong> <span id="status">Not initialized</span>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="log" id="log">
+        <div class="log-entry">Test log will appear here...</div>
+    </div>
+
+    <script>
+        let map;
+        let placesModule;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(status) {
+            document.getElementById('status').textContent = status;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '<div class="log-entry">Log cleared.</div>';
+        }
+
+        function initMap() {
+            log('Initializing map...');
+
+            // Create map centered on Kampala, Uganda
+            const kampalaCenter = { lat: 0.3476, lng: 32.5825 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: kampalaCenter,
+                zoom: 12,
+                mapTypeId: 'roadmap'
+            });
+
+            log('Map initialized successfully');
+            updateStatus('Map ready');
+
+            // Create PlacesModule instance
+            placesModule = new PlacesModule(map, 'search-input');
+            log('PlacesModule instance created');
+        }
+
+        function testEnable() {
+            if (!placesModule) {
+                log('ERROR: PlacesModule not initialized');
+                return;
+            }
+
+            log('Testing enable()...');
+            placesModule.enable();
+
+            if (placesModule.isActive()) {
+                log('✓ PlacesModule enabled successfully');
+                updateStatus('Places enabled');
+            } else {
+                log('✗ PlacesModule failed to enable');
+                updateStatus('Enable failed');
+            }
+        }
+
+        function testDisable() {
+            if (!placesModule) {
+                log('ERROR: PlacesModule not initialized');
+                return;
+            }
+
+            log('Testing disable()...');
+            placesModule.disable();
+
+            if (!placesModule.isActive()) {
+                log('✓ PlacesModule disabled successfully');
+                updateStatus('Places disabled');
+            } else {
+                log('✗ PlacesModule failed to disable');
+                updateStatus('Disable failed');
+            }
+        }
+
+        function testIsActive() {
+            if (!placesModule) {
+                log('ERROR: PlacesModule not initialized');
+                return;
+            }
+
+            const isActive = placesModule.isActive();
+            log(`isActive() returned: ${isActive}`);
+            updateStatus(isActive ? 'Active' : 'Inactive');
+        }
+
+        function testGetAutocomplete() {
+            if (!placesModule) {
+                log('ERROR: PlacesModule not initialized');
+                return;
+            }
+
+            const autocomplete = placesModule.getAutocomplete();
+            if (autocomplete) {
+                log('✓ getAutocomplete() returned Autocomplete instance');
+                log(`  Autocomplete type: ${typeof autocomplete}`);
+            } else {
+                log('✓ getAutocomplete() returned null (module not active)');
+            }
+        }
+
+        function testClearMarker() {
+            if (!placesModule) {
+                log('ERROR: PlacesModule not initialized');
+                return;
+            }
+
+            log('Testing clearMarker()...');
+            placesModule.clearMarker();
+            log('✓ clearMarker() executed');
+        }
+
+        // Make initMap available globally for Google Maps callback
+        window.initMap = initMap;
+    </script>
+
+    <!-- Include PlacesModule class from app.js -->
+    <script>
+        /**
+         * PlacesModule Class
+         * 
+         * Implements location search with autocomplete functionality using Google Places API.
+         * Allows users to search for locations and automatically centers the map on selected places.
+         */
+        class PlacesModule {
+            /**
+             * Create a PlacesModule instance
+             * @param {google.maps.Map} map - The Google Maps instance
+             * @param {string} inputElementId - The ID of the HTML input element for autocomplete
+             */
+            constructor(map, inputElementId) {
+                this.map = map;
+                this.inputElementId = inputElementId;
+                this.autocomplete = null;
+                this.marker = null;
+                this.infoWindow = null;
+                this.placeChangedListener = null;
+                this.active = false;
+            }
+
+            /**
+             * Enable the places module
+             * Creates Autocomplete instance and attaches it to the input element
+             */
+            enable() {
+                // Check if Places library is loaded
+                if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                    const errorMessage = 'Places library not loaded. Add "places" to libraries parameter in Google Maps API script tag.';
+                    console.error(errorMessage);
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Get the input element
+                const inputElement = document.getElementById(this.inputElementId);
+                if (!inputElement) {
+                    const errorMessage = `Input element with ID "${this.inputElementId}" not found.`;
+                    console.error(errorMessage);
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Create Autocomplete instance
+                this.autocomplete = new google.maps.places.Autocomplete(inputElement);
+
+                // Bind autocomplete to map bounds (optional - biases results to visible area)
+                this.autocomplete.bindTo('bounds', this.map);
+
+                // Create info window for place details
+                this.infoWindow = new google.maps.InfoWindow();
+
+                // Add place_changed event listener
+                this.placeChangedListener = this.autocomplete.addListener('place_changed', () => {
+                    this.handlePlaceSelection();
+                });
+
+                this.active = true;
+                console.log('Places autocomplete enabled');
+            }
+
+            /**
+             * Handle place selection from autocomplete
+             * Centers map on selected place and adds marker
+             */
+            handlePlaceSelection() {
+                // Close any open info window
+                if (this.infoWindow) {
+                    this.infoWindow.close();
+                }
+
+                // Get the selected place
+                const place = this.autocomplete.getPlace();
+
+                // Validate place has geometry
+                if (!place.geometry || !place.geometry.location) {
+                    const errorMessage = `No details available for input: '${place.name}'`;
+                    console.warn(errorMessage);
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Clear existing marker if any
+                this.clearMarker();
+
+                // Center map on place location
+                if (place.geometry.viewport) {
+                    // If place has a viewport (e.g., city, region), fit to viewport
+                    this.map.fitBounds(place.geometry.viewport);
+                } else {
+                    // Otherwise, center on the location and set zoom
+                    this.map.setCenter(place.geometry.location);
+                    this.map.setZoom(15);
+                }
+
+                // Create marker at place location
+                this.marker = new google.maps.Marker({
+                    map: this.map,
+                    position: place.geometry.location,
+                    title: place.name || 'Selected Place',
+                    animation: google.maps.Animation.DROP
+                });
+
+                // Prepare info window content
+                const contentParts = [];
+
+                if (place.name) {
+                    contentParts.push(`<h3 style="margin: 0 0 8px 0; color: #1a73e8;">${place.name}</h3>`);
+                }
+
+                if (place.formatted_address) {
+                    contentParts.push(`<p style="margin: 0; color: #5f6368;">${place.formatted_address}</p>`);
+                }
+
+                if (place.geometry && place.geometry.location) {
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    contentParts.push(`<p style="margin: 8px 0 0 0; font-size: 12px; color: #80868b;">Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>`);
+                }
+
+                const content = `<div style="padding: 10px;">${contentParts.join('')}</div>`;
+
+                // Display info window
+                this.infoWindow.setContent(content);
+                this.infoWindow.open(this.map, this.marker);
+
+                console.log('Place selected:', place.name || place.formatted_address);
+            }
+
+            /**
+             * Disable the places module
+             * Removes event listeners and clears marker
+             */
+            disable() {
+                if (!this.active) {
+                    return;
+                }
+
+                // Remove place_changed event listener
+                if (this.placeChangedListener) {
+                    google.maps.event.removeListener(this.placeChangedListener);
+                    this.placeChangedListener = null;
+                }
+
+                // Close and clear info window
+                if (this.infoWindow) {
+                    this.infoWindow.close();
+                    this.infoWindow = null;
+                }
+
+                // Clear marker
+                this.clearMarker();
+
+                // Clear autocomplete reference (but don't remove from input - it's part of the UI)
+                this.autocomplete = null;
+
+                this.active = false;
+                console.log('Places autocomplete disabled');
+            }
+
+            /**
+             * Check if the places module is currently active
+             * @returns {boolean} True if active, false otherwise
+             */
+            isActive() {
+                return this.active;
+            }
+
+            /**
+             * Get the Autocomplete instance
+             * @returns {google.maps.places.Autocomplete|null} The autocomplete instance or null if not active
+             */
+            getAutocomplete() {
+                return this.autocomplete;
+            }
+
+            /**
+             * Clear the current place marker
+             */
+            clearMarker() {
+                if (this.marker) {
+                    this.marker.setMap(null);
+                    this.marker = null;
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Maps JavaScript API with Places library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places&callback=initMap" async
+        defer></script>
+</body>
+
+</html>

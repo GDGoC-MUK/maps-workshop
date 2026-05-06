@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StageManager Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4285f4;
+            padding-bottom: 10px;
+        }
+
+        .test-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #console-output {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .success {
+            color: #4caf50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+
+        .info {
+            color: #2196f3;
+        }
+
+        .warning {
+            color: #ff9800;
+        }
+
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        .description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>StageManager Test Suite</h1>
+
+    <div class="description">
+        <p>This page tests the StageManager class implementation for the Google Maps Workshop.</p>
+        <p>The test suite verifies module registration, enabling, disabling, toggling, conflict detection, and error
+            handling.</p>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Results</h2>
+        <button onclick="runTests()">Run Tests Again</button>
+        <div id="console-output"></div>
+    </div>
+
+    <!-- Load the app.js file containing the StageManager class -->
+    <script src="app.js"></script>
+
+    <!-- Load the test suite -->
+    <script>
+        // Capture console output and display it in the page
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function formatOutput(message, type = 'log') {
+            const span = document.createElement('span');
+
+            if (type === 'error') {
+                span.className = 'error';
+            } else if (type === 'warn') {
+                span.className = 'warning';
+            } else if (message.includes('✓')) {
+                span.className = 'success';
+            } else if (message.includes('✗')) {
+                span.className = 'error';
+            } else if (message.includes('===')) {
+                span.className = 'info';
+            }
+
+            span.textContent = message + '\n';
+            return span;
+        }
+
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            consoleOutput.appendChild(formatOutput(message, 'log'));
+        };
+
+        console.error = function (...args) {
+            originalError.apply(console, args);
+            const message = args.join(' ');
+            consoleOutput.appendChild(formatOutput(message, 'error'));
+        };
+
+        console.warn = function (...args) {
+            originalWarn.apply(console, args);
+            const message = args.join(' ');
+            consoleOutput.appendChild(formatOutput(message, 'warn'));
+        };
+    </script>
+    <script src="test-stage-manager.js"></script>
+    <script>
+        // Run tests immediately after loading
+        // The test file will handle the execution
+    </script>
+</body>
+
+</html>

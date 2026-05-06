@@ -1,0 +1,234 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            32.5500,
+                            0.3000
+                        ],
+                        [
+                            32.6000,
+                            0.3000
+                        ],
+                        [
+                            32.6000,
+                            0.3500
+                        ],
+                        [
+                            32.5500,
+                            0.3500
+                        ],
+                        [
+                            32.5500,
+                            0.3000
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Central Kampala District",
+                "description": "Main commercial and administrative district of Kampala",
+                "population": "Approx. 500,000",
+                "area": "189 km²",
+                "type": "administrative"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            32.5200,
+                            0.2700
+                        ],
+                        [
+                            32.5700,
+                            0.2700
+                        ],
+                        [
+                            32.5700,
+                            0.3000
+                        ],
+                        [
+                            32.5200,
+                            0.3000
+                        ],
+                        [
+                            32.5200,
+                            0.2700
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Rubaga Division",
+                "description": "One of the five administrative divisions of Kampala",
+                "population": "Approx. 400,000",
+                "landmarks": "Rubaga Cathedral, Mengo Palace",
+                "type": "administrative"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            32.6000,
+                            0.3100
+                        ],
+                        [
+                            32.6400,
+                            0.3100
+                        ],
+                        [
+                            32.6400,
+                            0.3400
+                        ],
+                        [
+                            32.6000,
+                            0.3400
+                        ],
+                        [
+                            32.6000,
+                            0.3100
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Nakawa Division",
+                "description": "Industrial and residential division",
+                "population": "Approx. 350,000",
+                "landmarks": "Nakawa Market, Lugogo Stadium",
+                "type": "administrative"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        32.5825,
+                        0.3476
+                    ],
+                    [
+                        32.5900,
+                        0.3400
+                    ],
+                    [
+                        32.6000,
+                        0.3350
+                    ],
+                    [
+                        32.6100,
+                        0.3300
+                    ],
+                    [
+                        32.6200,
+                        0.3250
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Jinja Road",
+                "description": "Major highway connecting Kampala to Jinja",
+                "type": "highway",
+                "length": "Approx. 8 km (within city)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        32.5825,
+                        0.3476
+                    ],
+                    [
+                        32.5750,
+                        0.3350
+                    ],
+                    [
+                        32.5700,
+                        0.3200
+                    ],
+                    [
+                        32.5650,
+                        0.3050
+                    ],
+                    [
+                        32.5600,
+                        0.2900
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Entebbe Road",
+                "description": "Main road to Entebbe International Airport",
+                "type": "highway",
+                "length": "Approx. 10 km (within city)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    32.5825,
+                    0.3476
+                ]
+            },
+            "properties": {
+                "name": "Kampala City Center",
+                "description": "Central business district and administrative center",
+                "type": "landmark",
+                "significance": "Economic and political hub of Uganda"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    32.5656,
+                    0.3136
+                ]
+            },
+            "properties": {
+                "name": "Makerere University",
+                "description": "Uganda's largest and oldest institution of higher learning",
+                "type": "landmark",
+                "established": "1922",
+                "significance": "Premier university in East Africa"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    32.5380,
+                    0.3580
+                ]
+            },
+            "properties": {
+                "name": "Kasubi Royal Tombs",
+                "description": "UNESCO World Heritage Site and burial grounds of Buganda kings",
+                "type": "landmark",
+                "significance": "Cultural and spiritual center of the Buganda Kingdom",
+                "unesco": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StateManager Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4285f4;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4285f4;
+        }
+
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        button.secondary {
+            background-color: #34a853;
+        }
+
+        button.secondary:hover {
+            background-color: #2d8e47;
+        }
+
+        button.danger {
+            background-color: #ea4335;
+        }
+
+        button.danger:hover {
+            background-color: #d33426;
+        }
+
+        pre {
+            background-color: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        .console-output {
+            background-color: #263238;
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+
+        .info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>StateManager Demo</h1>
+
+        <div class="info">
+            <strong>About StateManager:</strong> The StateManager class tracks application state for debugging and
+            persistence.
+            It maintains information about map initialization, active modules, map position, and module states.
+        </div>
+
+        <div class="section">
+            <h2>State Operations</h2>
+            <button onclick="initializeState()">Initialize State</button>
+            <button onclick="setMapInitialized()">Set Map Initialized</button>
+            <button onclick="addActiveModule()">Add Active Module</button>
+            <button onclick="setMapPosition()">Set Map Position</button>
+            <button class="secondary" onclick="displayState()">Display Current State</button>
+            <button class="danger" onclick="clearState()">Clear State</button>
+        </div>
+
+        <div class="section">
+            <h2>Import/Export Operations</h2>
+            <button onclick="exportState()">Export State</button>
+            <button onclick="importSampleState()">Import Sample State</button>
+        </div>
+
+        <div class="section">
+            <h2>Current State</h2>
+            <div id="state-display" class="console-output">State will be displayed here...</div>
+        </div>
+
+        <div class="section">
+            <h2>Console Output</h2>
+            <div id="console-output" class="console-output">Console messages will appear here...</div>
+        </div>
+
+        <div class="section">
+            <h2>Try in Browser Console</h2>
+            <p>Open your browser's developer console (F12) and try these commands:</p>
+            <pre>// Get current state
+stateManager.getState()
+
+// Update state
+stateManager.setState('mapInitialized', true)
+stateManager.setState('activeModules', ['clustering', 'heatmap'])
+
+// Export state
+stateManager.exportState()
+
+// Clear state
+stateManager.clearState()</pre>
+        </div>
+    </div>
+
+    <script>
+        // StateManager class
+        class StateManager {
+            constructor() {
+                this.state = {
+                    mapInitialized: false,
+                    apiKeyValid: false,
+                    activeModules: [],
+                    mapCenter: null,
+                    mapZoom: null,
+                    moduleStates: {}
+                };
+            }
+
+            getState() {
+                return { ...this.state };
+            }
+
+            setState(key, value) {
+                this.state[key] = value;
+            }
+
+            clearState() {
+                this.state = {
+                    mapInitialized: false,
+                    apiKeyValid: false,
+                    activeModules: [],
+                    mapCenter: null,
+                    mapZoom: null,
+                    moduleStates: {}
+                };
+            }
+
+            exportState() {
+                return JSON.stringify(this.state, null, 2);
+            }
+
+            importState(stateJson) {
+                try {
+                    const importedState = JSON.parse(stateJson);
+                    this.state = {
+                        mapInitialized: importedState.mapInitialized || false,
+                        apiKeyValid: importedState.apiKeyValid || false,
+                        activeModules: importedState.activeModules || [],
+                        mapCenter: importedState.mapCenter || null,
+                        mapZoom: importedState.mapZoom || null,
+                        moduleStates: importedState.moduleStates || {}
+                    };
+                } catch (error) {
+                    throw new Error(`Failed to import state: ${error.message}`);
+                }
+            }
+        }
+
+        // Create global instance
+        const stateManager = new StateManager();
+        window.stateManager = stateManager; // Make available in console
+
+        // Helper functions for demo
+        function log(message) {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            output.textContent += `[${timestamp}] ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function displayState() {
+            const state = stateManager.getState();
+            document.getElementById('state-display').textContent = JSON.stringify(state, null, 2);
+            log('State displayed');
+        }
+
+        function initializeState() {
+            stateManager.setState('apiKeyValid', true);
+            log('State initialized with apiKeyValid = true');
+            displayState();
+        }
+
+        function setMapInitialized() {
+            stateManager.setState('mapInitialized', true);
+            log('Map initialized flag set to true');
+            displayState();
+        }
+
+        function addActiveModule() {
+            const modules = ['clustering', 'heatmap', 'places', 'geojson'];
+            const currentModules = stateManager.getState().activeModules;
+            const availableModules = modules.filter(m => !currentModules.includes(m));
+
+            if (availableModules.length > 0) {
+                const newModule = availableModules[0];
+                currentModules.push(newModule);
+                stateManager.setState('activeModules', currentModules);
+                log(`Added module: ${newModule}`);
+            } else {
+                log('All modules already active');
+            }
+            displayState();
+        }
+
+        function setMapPosition() {
+            const kampala = { lat: 0.3476, lng: 32.5825 };
+            stateManager.setState('mapCenter', kampala);
+            stateManager.setState('mapZoom', 12);
+            log('Map position set to Kampala, Uganda (zoom: 12)');
+            displayState();
+        }
+
+        function clearState() {
+            stateManager.clearState();
+            log('State cleared to defaults');
+            displayState();
+        }
+
+        function exportState() {
+            const exported = stateManager.exportState();
+            log('State exported to JSON:');
+            log(exported);
+
+            // Also copy to clipboard if available
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(exported).then(() => {
+                    log('State copied to clipboard!');
+                });
+            }
+        }
+
+        function importSampleState() {
+            const sampleState = {
+                mapInitialized: true,
+                apiKeyValid: true,
+                activeModules: ['clustering', 'heatmap'],
+                mapCenter: { lat: 0.3476, lng: 32.5825 },
+                mapZoom: 12,
+                moduleStates: {
+                    clustering: { active: true, lastToggled: new Date().toISOString() },
+                    heatmap: { active: true, lastToggled: new Date().toISOString() }
+                }
+            };
+
+            stateManager.importState(JSON.stringify(sampleState));
+            log('Sample state imported successfully');
+            displayState();
+        }
+
+        // Initialize display
+        displayState();
+        log('StateManager demo ready. Try the buttons above or use the browser console!');
+    </script>
+</body>
+
+</html>
