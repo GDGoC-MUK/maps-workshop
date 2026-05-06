@@ -123,6 +123,10 @@ Paste the template above into Google AI Studio and start asking specific questio
 - Integrating with the existing modules
 - Adding custom styling or features
 
+### Aiquo API url Postman
+https://api.airqou.net/api/v2/devices/measurements/grids/67c9681471c7b0001383d7a?token={SECRET-TOKEN}
+[Docs guidance](https://platform.airqo.net/docs/api/intro/)
+
 ---
 
 ## Common Project Ideas
