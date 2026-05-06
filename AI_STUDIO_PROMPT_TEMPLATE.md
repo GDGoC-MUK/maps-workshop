@@ -123,13 +123,16 @@ Paste the template above into Google AI Studio and start asking specific questio
 - Integrating with the existing modules
 - Adding custom styling or features
 
-### Aiquo API url Postman
-https://api.airqou.net/api/v2/devices/measurements/grids/67c9681471c7b0001383d7a?token={SECRET-TOKEN}
+### Airqo API url Postman
+
+https://api.airqo.net/api/v2/devices/measurements/grids/67c9681471c7b0001383d7a?token={SECRET-TOKEN}
+
 [Docs guidance](https://platform.airqo.net/docs/api/intro/)
 
 ---
 
-## Common Project Ideas
+## Common Project Ideashttps://platform.airqo.net/docs/api/intro/
+
 
 1. **Basic Pollution Map**: Display AirQo monitoring stations as markers with PM2.5 values
 2. **Pollution Heatmap**: Show pollution density across Kampala using heatmap visualization
