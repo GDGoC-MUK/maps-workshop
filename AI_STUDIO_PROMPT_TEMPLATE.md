@@ -123,9 +123,10 @@ Paste the template above into Google AI Studio and start asking specific questio
 - Integrating with the existing modules
 - Adding custom styling or features
 
-### Airqo API url Postman
+### Airqo API URL Postman
 
-https://api.airqo.net/api/v2/devices/measurements/grids/67c9681471c7b0001383d7a?token={SECRET-TOKEN}
+- Copy this for Postman "https://api.airqo.net/api/v2/devices/measurements/grids/67c9681471c7b0001383d7a?token={SECRET-TOKEN}"
+- Remove the quotes
 
 [Docs guidance](https://platform.airqo.net/docs/api/intro/)
 
